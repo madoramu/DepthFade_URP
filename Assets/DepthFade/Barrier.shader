@@ -1,8 +1,10 @@
-﻿Shader "Unlit/UnlitDepthFade"
+﻿Shader "Unlit/Barrier"
 {
     Properties
     {
         _MainTex("MainTexture", 2D) = "white" {}
+        _NormalTex("ノーマルマップ", 2D) = "bump" {}
+        _NormalMul("ノーマルマップの強さ", float) = 1
         _FresnelColor("リムライトの色", Color) = (1, 1, 1, 1)
         _FresnelPow("フレネルべき乗値", float) = 2
         _FresnelMul("フレネル乗算値", float) = 1
@@ -43,6 +45,10 @@
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+
+            sampler2D _NormalTex;
+            float4 _NormalTex_ST;
+            fixed _NormalMul;
 
             half _FresnelPow;
             half _FresnelMul;

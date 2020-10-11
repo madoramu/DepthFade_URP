@@ -52,6 +52,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NormalTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -66,7 +70,7 @@ Material:
     - _BumpScale: 1
     - _Cull: 2
     - _Cutoff: 0.5
-    - _DepthFadeMul: 0.2
+    - _DepthFadeMul: 0.26
     - _DstBlend: 0
     - _Edge: 2
     - _EnvironmentReflections: 1
@@ -76,6 +80,7 @@ Material:
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
+    - _NormalMul: 1
     - _OcclusionStrength: 1
     - _QueueOffset: 0
     - _ReceiveShadows: 1
