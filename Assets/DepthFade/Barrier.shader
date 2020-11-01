@@ -36,11 +36,14 @@
             struct v2f
             {
                 float4 vertex : SV_POSITION;
-                half3 normal : NORMAL;
+                half3 normal : NORMAL0;
+                half3 binormal : NORMAL1;
+                half3 tangent : TANGENT;
 
                 float2 uv : TEXCOORD0;
                 half3 viewDir : TEXCOORD1;
-                float4 screenPosition : TEXCOORD2;
+                half3 lightDir : TEXCOORD2;
+                float4 screenPosition : TEXCOORD3;
             };
 
             sampler2D _MainTex;
@@ -58,6 +61,15 @@
             half4 _DepthIntersectColor;
             fixed _DepthFadeMul;
 
+            // ローカル空間上での接空間ベクトルの方向を求める
+            inline void LocalNormalToTBN(float3 localNormal, float4 tangent, inout half3 t, inout half3 b, inout half3 n)
+            {
+                half handedness = tangent.w * unity_WorldTransformParams.w;
+                n = normalize(UnityObjectToWorldNormal(localNormal));
+                t = normalize(UnityObjectToWorldDir(tangent.xyz));
+                b = normalize(cross(n, t) * handedness);
+            }
+
             v2f vert (appdata v)
             {
                 v2f o;
@@ -66,10 +78,13 @@
                 // テクスチャスケールとオフセットを考慮した値を格納
                 o.uv = TRANSFORM_TEX(v.uv, _MainTex);
 
+                // ワールド座標系のライト方向のベクトルを取得する
+                o.lightDir = WorldSpaceLightDir(v.vertex);
                 // ワールド座標系のカメラ方向のベクトルを取得する
                 o.viewDir = normalize(WorldSpaceViewDir(v.vertex));
-                // ワールド空間上の法線を取得
-                o.normal = UnityObjectToWorldNormal(v.normal);
+
+                LocalNormalToTBN(v.normal, v.tangent, o.tangent, o.binormal, o.normal);
+
                 // クリップ空間座標を元にスクリーンスペースでの位置を求める(xyが0~wの値になる)
                 // プラットフォームごとのY座標上下反転問題も修正
                 o.screenPosition = ComputeScreenPos(o.vertex);
@@ -91,11 +106,21 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 // メインテクスチャ読み込み
-                fixed4 texColor = tex2D(_MainTex, i.uv);
+                fixed4 texColor = tex2D(_MainTex, i.uv * _MainTex_ST);
 
+                // デプステクスチャ読み込み
+                half3 texNormal = UnpackNormal(tex2D(_NormalTex, i.uv * _NormalTex_ST));
+                texNormal.xy *= _NormalMul;
+                // 接空間のノーマル行列作成
+                half3x3 TBN = transpose(half3x3(i.tangent, i.binormal, i.normal));
+                // デプステクスチャと算出した行列から法線取得
+                half3 worldNormal = mul(TBN, texNormal);
+                // 光源とノーマルの内積を出して基本色にかけ合わせる
+                texColor *= dot(i.lightDir, worldNormal);
+                
                 // リムライト計算
                 fixed rim = CalculateRim(i.viewDir, i.normal, _FresnelPow, _FresnelMul);
-                
+               
                 // デプスフェード計算
                 float depth = abs(LinearEyeDepth(SAMPLE_DEPTH_TEXTURE_PROJ(_CameraDepthTexture, UNITY_PROJ_COORD(i.screenPosition))) - i.screenPosition.z); 
                 fixed depthIntersect = saturate(depth / _DepthFadeMul);
