@@ -10,6 +10,9 @@
         _FresnelMul("フレネル乗算値", float) = 1
         _DepthIntersectColor("デプスフェードの色", Color) = (1, 1, 1, 1)
         _DepthFadeMul("デプスフェードの強さ", float) = 0.2
+        _UVAnimationTex("ラインアニメーション用テクスチャ", 2D) = "white" {}
+        _LineMaskTex("ラインアニメーション用マスクテクスチャ", 2D) = "white" {}
+        _LineColor("ラインカラー", Color) = (1, 1, 1, 1)
     }
     SubShader
     {
@@ -60,6 +63,13 @@
             sampler2D _CameraDepthTexture;  // デプスバッファ
             half4 _DepthIntersectColor;
             fixed _DepthFadeMul;
+
+            // UVアニメーション用
+            sampler2D _UVAnimationTex;
+            float4 _UVAnimationTex_ST;
+            sampler2D _LineMaskTex;
+            float4 _LineMaskTex_ST;
+            half4 _LineColor;
 
             // ローカル空間上での接空間ベクトルの方向を求める
             inline void LocalNormalToTBN(float3 localNormal, float4 tangent, inout half3 t, inout half3 b, inout half3 n)
@@ -141,8 +151,23 @@
                 fixed4 depthIntersectColor = (1 - depthIntersect) * _DepthIntersectColor;
                 */
 
+
+                // UVアニメーション
+                // ラインマスクテクスチャのUV座標を時間でずらしていく
+                fixed4 animationTex = tex2D(_UVAnimationTex, i.uv * _UVAnimationTex_ST);
+                float2 lineUV = i.uv * _LineMaskTex_ST + float2(0, _Time.y * 1.0);
+                fixed4 lineTex = tex2D(_LineMaskTex, lineUV);
+
+                fixed texR = animationTex.r * lineTex.r;
+                fixed4 lineColor = texR * _LineColor * rim;
+                //lineColor.rgb = 
+                // リムを無視する場合
+                //lineColor.a = texR * _LineColor.a;
+                // リムを考慮する場合
+                //lineColor.a = texR * _LineColor.a;
+
                 // 出力色設定
-                fixed4 col = texColor * _FresnelColor * rim + depthIntersectColor;
+                fixed4 col = texColor * _FresnelColor * rim + depthIntersectColor + lineColor;
                 return col;
             }
             ENDCG

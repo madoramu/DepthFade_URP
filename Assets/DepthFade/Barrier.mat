@@ -43,6 +43,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _LineMaskTex:
+        m_Texture: {fileID: 2800000, guid: 8fce78ce7ab92a94ab8e360cc19b1fce, type: 3}
+        m_Scale: {x: 1, y: 4}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -66,6 +70,10 @@ Material:
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _UVAnimationTex:
+        m_Texture: {fileID: 2800000, guid: 5bb1ddc5906453543a55d7a216504667, type: 3}
+        m_Scale: {x: 2, y: 2}
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _AlphaClip: 0
@@ -100,9 +108,10 @@ Material:
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _DepthIntersectColor: {r: 1, g: 0.06914881, b: 0, a: 1}
+    - _DepthIntersectColor: {r: 0, g: 1, b: 0.6812067, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FresnelColor: {r: 1, g: 1, b: 1, a: 1}
+    - _LineColor: {r: 0, g: 1, b: 1, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
 --- !u!114 &2533122421327367260
 MonoBehaviour:
