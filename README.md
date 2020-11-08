@@ -2,7 +2,7 @@
 
 UnityVersion…Unity2019.4.11f1
 
-「Assets/DepthFade」フォルダ以下に該当アセット一式が入っています
+URPプロジェクトを使用。「Assets/DepthFade」フォルダ以下に該当アセット一式が入っています
 
 ---
 
